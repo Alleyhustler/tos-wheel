@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOS Wheel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #DEC2AD; /* Muted peach/beige */
+            --secondary-color: #2a2a2a; /* Dark background */
+            --text-color: #e0e0e0;
+            --accent-color: #6a0000; /* Darker red for authority/alert */
+            --font-mono: 'Roboto Mono', monospace;
+            --font-heading: 'Oswald', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('background.png'); /* Placeholder path */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            overflow-x: hidden;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: rgba(18, 18, 18, 0.85); /* Slightly transparent dark overlay */
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--accent-color); /* Subtle red border */
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(var(--primary-color), 0.2);
+            position: relative;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            height: 60px; /* Adjust as needed */
+            margin-right: 15px;
+            filter: drop-shadow(0 0 5px rgba(var(--primary-color), 0.5));
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 3em;
+            color: var(--primary-color);
+            margin: 0;
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px rgba(var(--primary-color), 0.4);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: var(--text-color);
+            margin-top: -10px;
+            font-style: italic;
+        }
+
+        .twitter-link {
+            position: absolute; /* Position relative to header */
+            bottom: 0; /* Align with bottom of header-left content */
+            left: 0;
+            font-size: 0.9em;
+            color: var(--primary-color);
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        .twitter-link:hover {
+            text-decoration: underline;
+        }
+
+        .connect-wallet {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            padding: 12px 25px;
+            font-family: var(--font-mono);
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            white-space: nowrap;
+            align-self: flex-start; /* Align with the top of the header */
+            margin-top: 10px; /* Give some space */
+        }
+        .connect-wallet:hover {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border-color: var(--accent-color);
+        }
+
+        /* Main Wheel Section */
+        .main-wheel-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 400px; /* Base size */
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
+            .wheel-container {
+                width: 300px;
+                height: 300px;
+            }
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1); /* Spin animation */
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .pointer {
+            position: absolute;
+            /* Flipped to bottom */
+            bottom: 390px; /* Position below the wheel - adjusted this back to -20px for better alignment with the circle */
+            left: 50%;
+            transform: translateX(-50%); /* Center horizontally */
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid var(--accent-color); /* Points UP now */
+            z-index: 2; /* Increased z-index to ensure it's above the wheel image */
+        }
+
+        .rule-card {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--primary-color);
+            padding: 25px;
+            border-radius: 5px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 0 15px rgba(var(--primary-color), 0.3);
+            text-align: center;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .rule-card .system-message {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .rule-card .rule-text {
+            font-size: 1.4em;
+            color: var(--text-color);
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+        }
+
+        .rule-card .countdown {
+            font-size: 1.2em;
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .reward-message {
+            color: #4CAF50; /* Green for success */
+            font-size: 1.1em;
+            font-weight: bold;
+            display: none;
+            margin-top: 10px;
+        }
+
+        /* Sections below the wheel */
+        .grid-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            .grid-sections {
+                grid-template-columns: 1fr; /* Stack on small screens */
+            }
+        }
+
+        .section-panel {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--primary-color);
+            padding: 25px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(var(--primary-color), 0.2);
+            text-align: left;
+        }
+
+        .section-panel h3 {
+            font-family: var(--font-heading);
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(var(--primary-color), 0.3);
+            padding-bottom: 10px;
+        }
+
+        .wheel-log ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .wheel-log li {
+            background-color: rgba(var(--primary-color), 0.05);
+            padding: 10px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--accent-color);
+            font-size: 0.95em;
+        }
+        .wheel-log li:last-child {
+            margin-bottom: 0;
+        }
+
+        .about-text {
+            font-size: 1em;
+            color: var(--text-color);
+        }
+
+        /* Utility classes */
+        .text-center { text-align: center; }
+        .text-bold { font-weight: bold; }
+        .text-red { color: var(--accent-color); }
+        .text-green { color: #4CAF50; }
+        .hidden { display: none !important; }
+
+        /* Loader for initial wheel image */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--secondary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            color: var(--primary-color);
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        Loading The Wheel...
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <div class="logo-title">
+                    <img src="logo.png" alt="TOS Wheel Logo" class="logo">
+                    <h1>TOS Wheel</h1>
+                </div>
+                <p class="subtitle">“You accepted. Now spin.”</p>
+                <a href="https://x.com/TOSWheel" target="_blank" class="twitter-link">@TOSWheel</a>
+            </div>
+            <!-- Wallet button updated -->
+            <button class="connect-wallet" id="connectWalletBtn">Connect Wallet</button>
+        </header>
+
+        <section class="main-wheel-section">
+            <div class="wheel-container">
+                <div class="pointer"></div>
+                <img src="wheel.png" alt="TOS Wheel" class="wheel" id="tosWheel">
+            </div>
+
+            <div class="rule-card" id="ruleCard">
+                <p class="system-message">[SYSTEM] Rule Assigned:</p>
+                <p class="rule-text" id="assignedRuleText"></p>
+                <p class="countdown" id="rewardCountdown"></p>
+                <p class="reward-message" id="rewardMessage">[SYSTEM] Compliance verified. Creator reward emitted.</p>
+            </div>
+        </section>
+
+        <section class="grid-sections">
+            <div class="section-panel wheel-log">
+                <h3>Wheel Log</h3>
+                <ul id="wheelLogList">
+                    <!-- Log entries will be added here by JS -->
+                </ul>
+            </div>
+            <div class="section-panel about-experiment">
+                <h3>About the Experiment</h3>
+                <p class="about-text">
+                    TOS Wheel assigns randomized behavioral conditions to participants.
+                    Rules change per spin. Compliance yields temporary rewards.
+                    Breaking your assigned rule may result in permanent disqualification.
+                    Spin wisely.
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const tosWheel = document.getElementById('tosWheel');
+            const ruleCard = document.getElementById('ruleCard');
+            const assignedRuleText = document.getElementById('assignedRuleText');
+            const rewardCountdown = document.getElementById('rewardCountdown');
+            const rewardMessage = document.getElementById('rewardMessage');
+            const wheelLogList = document.getElementById('wheelLogList');
+            const connectWalletBtn = document.getElementById('connectWalletBtn'); // Get the button
+
+            const rules = [
+                "You can't sell for 2h.",
+                "Must buy 0.1 more.",
+                "Shill the coin in 3 Telegram chats.",
+                "Post proof of hold.",
+                "Claim your guilt publicly.",
+                "Transfer 1% to your downline.",
+                "Engage with 5 posts.",
+                "Donate 0.05 to the vault.",
+                "Burn 0.01 from your wallet.",
+                "Recruit 1 new member."
+            ];
+
+            const SPIN_DURATION = 4000; // milliseconds
+            let isSpinning = false;
+            let currentRule = null;
+            let countdownInterval = null;
+            let walletConnected = false; // Track wallet connection status
+            let userPublicKey = null; // Store connected public key
+
+            // --- Wallet Connection Logic ---
+            const connectWallet = async () => {
+                try {
+                    const { solana } = window;
+
+                    if (solana && solana.isPhantom) { // Check for Phantom or other compatible wallets
+                        const response = await solana.connect();
+                        userPublicKey = response.publicKey.toString();
+                        console.log('Wallet connected:', userPublicKey);
+                        connectWalletBtn.textContent = `Connected: ${userPublicKey.substring(0, 4)}...${userPublicKey.substring(userPublicKey.length - 4)}`;
+                        walletConnected = true;
+                        // You could also store this in localStorage for persistence,
+                        // but for a simple demo, just keeping it in memory is fine.
+                    } else {
+                        alert('Solana wallet not found. Please install Phantom or another Solana wallet extension.');
+                        window.open('https://phantom.app/', '_blank'); // Offer to install Phantom
+                    }
+                } catch (error) {
+                    console.error('Wallet connection failed:', error);
+                    alert('Failed to connect wallet. Please ensure your wallet is unlocked.');
+                }
+            };
+
+            // --- Persistence (localStorage) ---
+            const saveState = () => {
+                localStorage.setItem('tosWheelState', JSON.stringify({
+                    currentRule: currentRule,
+                    rewardEndTime: localStorage.getItem('rewardEndTime') // Preserve existing end time if any
+                }));
+            };
+
+            const loadState = () => {
+                const savedState = JSON.parse(localStorage.getItem('tosWheelState'));
+                if (savedState && savedState.currentRule) {
+                    currentRule = savedState.currentRule;
+                    assignedRuleText.textContent = currentRule;
+                    ruleCard.style.display = 'flex';
+
+                    const rewardEndTime = parseInt(localStorage.getItem('rewardEndTime'), 10);
+                    if (!isNaN(rewardEndTime) && rewardEndTime > Date.now()) {
+                        startCountdown(rewardEndTime);
+                    } else {
+                        // If there was a rule but timer expired or invalid, reset
+                        resetRuleState();
+                    }
+                }
+            };
+
+            const updateWheelLog = (rule) => {
+                const now = new Date();
+                const timestamp = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `[${timestamp}] Rule: "<span class="text-bold">${rule}</span>"`;
+                wheelLogList.prepend(listItem); // Add to top
+                // Keep only the last 5 entries
+                while (wheelLogList.children.length > 5) {
+                    wheelLogList.removeChild(wheelLogList.lastChild);
+                }
+            };
+
+            const loadWheelLog = () => {
+                const savedLog = JSON.parse(localStorage.getItem('tosWheelLog')) || [];
+                savedLog.forEach(entry => updateWheelLog(entry.rule));
+            };
+
+            const saveWheelLog = (rule) => {
+                const savedLog = JSON.parse(localStorage.getItem('tosWheelLog')) || [];
+                const now = new Date();
+                savedLog.unshift({ rule: rule, timestamp: now.toISOString() }); // Add to start
+                while (savedLog.length > 5) {
+                    savedLog.pop(); // Keep only the last 5
+                }
+                localStorage.setItem('tosWheelLog', JSON.stringify(savedLog));
+                updateWheelLog(rule);
+            };
+
+            // --- Wheel Spinning Logic ---
+            const spinWheel = () => {
+                // You might want to add a check here to ensure wallet is connected before spinning
+                // if (!walletConnected) {
+                //     alert("Please connect your wallet first to spin the wheel.");
+                //     return;
+                // }
+
+                if (isSpinning) return;
+                isSpinning = true;
+
+                // Reset display for new spin
+                ruleCard.style.display = 'none';
+                rewardMessage.style.display = 'none';
+                clearInterval(countdownInterval);
+                rewardCountdown.textContent = '';
+                assignedRuleText.textContent = '';
+
+                // Generate a random rotation for the wheel
+                const randomDegrees = Math.floor(Math.random() * 360) + 360 * 5; // Spin at least 5 full rotations
+                tosWheel.style.transform = `rotate(${randomDegrees}deg)`;
+
+                // Determine the rule after the spin
+                const totalRules = rules.length;
+                const anglePerRule = 360 / totalRules;
+                const finalAngle = randomDegrees % 360; // Get the effective final angle (0-359)
+
+                // The pointer is at the bottom (180 degrees from top).
+                let pointerReferenceAngle = (finalAngle + 180) % 360; // Adjust for pointer being at the bottom
+
+                // Determine the segment the pointer "lands on"
+                const landedSegmentIndex = Math.floor((360 - pointerReferenceAngle) / anglePerRule);
+                const selectedRule = rules[landedSegmentIndex % totalRules];
+
+
+                setTimeout(() => {
+                    isSpinning = false;
+                    currentRule = selectedRule;
+                    assignedRuleText.textContent = currentRule;
+                    ruleCard.style.display = 'flex';
+                    saveWheelLog(currentRule);
+
+                    // Start 5-minute reward countdown
+                    const rewardDuration = 5 * 60 * 1000; // 5 minutes in ms
+                    const rewardEndTime = Date.now() + rewardDuration;
+                    localStorage.setItem('rewardEndTime', rewardEndTime.toString());
+                    saveState(); // Save current rule and end time
+                    startCountdown(rewardEndTime);
+
+                }, SPIN_DURATION);
+            };
+
+            const startCountdown = (endTime) => {
+                clearInterval(countdownInterval); // Clear any existing interval
+
+                countdownInterval = setInterval(() => {
+                    const now = Date.now();
+                    const timeLeft = endTime - now;
+
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        rewardCountdown.textContent = '';
+                        rewardMessage.style.display = 'block';
+                        localStorage.removeItem('rewardEndTime'); // Clear from storage
+                        currentRule = null; // Rule completed
+                        saveState(); // Update state
+                        setTimeout(() => rewardMessage.style.display = 'none', 5000); // Hide reward message after 5s
+                    } else {
+                        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                        rewardCountdown.textContent = `Rewards begin in ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.`;
+                        rewardCountdown.classList.remove('text-red'); // Ensure it's not red
+                    }
+                }, 1000);
+            };
+
+            const resetRuleState = () => {
+                currentRule = null;
+                clearInterval(countdownInterval);
+                ruleCard.style.display = 'none';
+                localStorage.removeItem('rewardEndTime');
+                saveState();
+            };
+
+            // --- Event Listeners ---
+            tosWheel.addEventListener('click', spinWheel);
+            connectWalletBtn.addEventListener('click', connectWallet); // Attach wallet connection function
+
+            // Initial load
+            const imgWheel = new Image();
+            imgWheel.src = 'wheel.png';
+            imgWheel.onload = () => {
+                // Once the wheel image is loaded, hide the overlay
+                loadingOverlay.classList.add('hidden');
+                setTimeout(() => loadingOverlay.style.display = 'none', 500); // Fully remove after transition
+
+                loadWheelLog();
+                loadState();
+            };
+            imgWheel.onerror = () => {
+                console.error("Failed to load wheel.png. Please ensure the asset path is correct.");
+                loadingOverlay.textContent = "Error loading wheel.png. Check console.";
+            };
+
+            // Preload background and logo as well
+            const imgBackground = new Image();
+            imgBackground.src = 'background.png';
+            const imgLogo = new Image();
+            imgLogo.src = 'logo.png';
+
+            // Optional: Check for existing connection on load (Phantom often auto-connects to dApps it previously connected to)
+            (async () => {
+                try {
+                    const { solana } = window;
+                    if (solana && solana.isPhantom && solana.isConnected) {
+                        userPublicKey = solana.publicKey.toString();
+                        connectWalletBtn.textContent = `Connected: ${userPublicKey.substring(0, 4)}...${userPublicKey.substring(userPublicKey.length - 4)}`;
+                        walletConnected = true;
+                        console.log("Wallet already connected:", userPublicKey);
+                    }
+                } catch (error) {
+                    console.error("Error checking for existing wallet connection:", error);
+                }
+            })();
+        });
+    </script>
+</body>
+</html>
